@@ -1,4 +1,3 @@
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -17,26 +16,25 @@ public class Main {
             // Object for reading or writing json
             ObjectMapper mapper = new ObjectMapper();
             // table
-            HashMap<Character, Character> cipher_table;
+            HashMap cipher_table;
             switch (operation) {
-                case 1:{
+                case 1: {
                     table_generation(mapper);
                     break;
                 }
 
                 case 2: {
                     cipher_table = mapper.readValue(new File("src/main/resources/JSON/table.json"), HashMap.class);
-                    cipher_table.forEach((k,v) -> System.out.println("Symbol: " + k + " | " + " Cipher: " + v));
+                    cipher_table.forEach((k, v) -> System.out.println("Symbol: " + k + " | " + " Cipher: " + v));
                     break;
                 }
 
                 case 3: {
                     cipher_table = mapper.readValue(new File("src/main/resources/JSON/table.json"), HashMap.class);
-                    System.out.println(cipher_table.get('A'));
-                    System.out.println(cipher_table.get('e'));
+                    if (cipher_table == null) System.err.println("Error: map is not found");
                     System.out.println("Add input string");
-                    String input = scanner.next();
-                    System.out.println(input + "- input string");
+                    scanner.nextLine();
+                    String input = scanner.nextLine();
                     System.out.println("Cipher string is: " + cipher(input, cipher_table));
                     break;
                 }
@@ -51,20 +49,20 @@ public class Main {
         }
     }
 
-    public static String cipher(String value, HashMap<Character, Character> cipher_table) throws IOException {
+    public static String cipher(String value, HashMap cipher_table) throws IOException {
         char[] input = value.toCharArray();
+        StringBuilder builder = new StringBuilder();
         for (int i = 0; i < input.length; i++) {
-            if (input[i] == ' '){
+            if (input[i] == ' ') {
+                builder.append(input[i] + "");
                 continue;
             } else {
-                if (cipher_table.get(input[i]) != null){
-                    input[i] = (char) cipher_table.get(input[i]);
-                } else {
-                    System.out.println("Я не понимать");
+                if (cipher_table.get(input[i] + "") != null) {
+                    builder.append(cipher_table.get(input[i] + ""));
                 }
             }
         }
-        return String.valueOf(input);
+        return builder.toString();
     }
 
     public static void table_generation(ObjectMapper mapper) throws IOException {
@@ -107,7 +105,7 @@ public class Main {
         // write table in file
         mapper.writeValue(new File("src/main/resources/JSON/table.json"), cipher_table);
         // output in console
-        for (Map.Entry<Character, Character> entry : cipher_table.entrySet()){
+        for (Map.Entry<Character, Character> entry : cipher_table.entrySet()) {
             System.out.println("Symbol: " + entry.getKey() + " | " + " Cipher: " + entry.getValue());
         }
     }
